@@ -20,6 +20,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/juan.jpg",
             joinedDate: "January 2020",
         },
+        status: "Available",
     },
     {
         id: "2",
@@ -40,6 +41,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/maria.jpg",
             joinedDate: "March 2019",
         },
+        status: "Available",
     },
     {
         id: "3",
@@ -60,6 +62,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/lina.jpg",
             joinedDate: "February 2021",
         },
+        status: "Under Maintenance",
     },
     {
         id: "4",
@@ -80,6 +83,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/carlos.jpg",
             joinedDate: "April 2022",
         },
+        status: "Available",
     },
     {
         id: "5",
@@ -100,6 +104,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/ana.jpg",
             joinedDate: "May 2020",
         },
+        status: "Available",
     },
     {
         id: "6",
@@ -111,7 +116,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
         bedrooms: 1,
         bathrooms: 1,
         genderPreference: "Male",
-        amenities: ["Kitchen"],
+        amenities: ["Kitchen", "CCTV"],
         contractLength: "3 months",
         description:
             "Affordable bed space available in Ermita, close to shops and public transport.",
@@ -120,6 +125,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/mark.jpg",
             joinedDate: "June 2021",
         },
+        status: "Occupied",
     },
     {
         id: "7",
@@ -140,6 +146,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/elena.jpg",
             joinedDate: "July 2018",
         },
+        status: "Under Maintenance",
     },
     {
         id: "8",
@@ -159,6 +166,7 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/rico.jpg",
             joinedDate: "August 2020",
         },
+        status: "Available",
     },
     {
         id: "9",
@@ -179,5 +187,6 @@ export const SAMPLE_RENTAL_DATA: RentalList = [
             image: "/maria_santos.jpg",
             joinedDate: "September 2017",
         },
+        status: "Occupied",
     },
 ];
