@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 const Navbar = () => {
     return (
         <nav className="container mx-auto p-4 flex items-center justify-between">
-            <Link href="/" className="font-bold text-xl">pa-rent</Link>
+            <Link href="/" className="font-bold text-xl">
+                pa-rent
+            </Link>
             <div>
                 <SignedOut>
                     <Button asChild>
@@ -15,7 +17,12 @@ const Navbar = () => {
                     </Button>
                 </SignedOut>
                 <SignedIn>
-                    <UserButton />
+                    <div className="flex items-center gap-5">
+                        <Link href="/dashboard">
+                            <Button>Dashboard</Button>
+                        </Link>
+                        <UserButton />
+                    </div>
                 </SignedIn>
             </div>
         </nav>
