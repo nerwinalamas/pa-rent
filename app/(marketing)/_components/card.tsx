@@ -1,15 +1,16 @@
+import { Property } from "@/sanity.types";
 import Image from "next/image";
 import Link from "next/link";
-import { Rental } from "../_lib/_types";
-import { formatPrice } from "../_lib";
 
-const Card = ({ id, name, location, price, images, propertyType }: Rental) => {
+const Card = ({ listing }: { listing: Property}) => {
+    const imageUrl = listing.images?.[0]?.url || 'https://placehold.co/600x400';
+
     return (
-        <Link href={`/property/${propertyType}/${id}`} className="group">
+        <Link href={`/property/${listing?.propertyType?.title.toLowerCase()}/${listing._id}`} className="group">
             <div className="aspect-square relative mb-4 bg-gray-100 rounded-lg overflow-hidden">
                 <Image
-                    src={images[0]}
-                    alt={`${name} image`}
+                    src={imageUrl}
+                    alt={`${listing.name} image`}
                     width={600}
                     height={600}
                     priority
@@ -17,9 +18,9 @@ const Card = ({ id, name, location, price, images, propertyType }: Rental) => {
                 />
             </div>
             <div>
-                <h3 className="font-semibold">{name}</h3>
-                <p className="text-sm text-muted-foreground">{location}</p>
-                <p className="mt-1">₱{formatPrice(price)}</p>
+                <h3 className="font-semibold">{listing.name}</h3>
+                <p className="text-sm text-muted-foreground">{listing.location}</p>
+                <p className="mt-1">₱{listing.price?.toLocaleString()}</p>
             </div>
         </Link>
     );
