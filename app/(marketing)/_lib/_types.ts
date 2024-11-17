@@ -10,7 +10,7 @@ export type Amenity =
     | "CCTV"
     | "Study Area";
 export type ContractLength = "1 month" | "3 months" | "6 months" | "1 year";
-
+export type PropertyStatus = "Available" | "Occupied" | "Under Maintenance"
 export type ContactPerson = {
     name: string;
     image: string;
@@ -31,6 +31,7 @@ export type Rental = {
     contractLength: ContractLength;
     description: string;
     contactPerson: ContactPerson;
+    status: PropertyStatus
 };
 
 export type RentalList = Rental[];
