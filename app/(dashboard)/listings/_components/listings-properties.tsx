@@ -40,12 +40,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { SAMPLE_RENTAL_DATA } from "@/app/(marketing)/_lib/data";
+import { Property } from "@/sanity.types";
+import { useListingModal } from "@/hooks/useListingModal";
 
-const ListingsProperties = () => {
+const ListingsProperties = ({ listings }: { listings: Property }) => {
     const [searchTerm, setSearchTerm] = useState("");
+    const { onOpen } = useListingModal();
 
-    const filteredListings = SAMPLE_RENTAL_DATA.filter(
+    const filteredListings = listings.filter(
         (listing) =>
             listing.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             listing.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,7 +63,10 @@ const ListingsProperties = () => {
                             Manage and monitor your property listings
                         </CardDescription>
                     </div>
-                    <Button>
+                    <Button
+                        type="button"
+                        onClick={() => onOpen("createListing")}
+                    >
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Listing
                     </Button>
@@ -92,7 +97,7 @@ const ListingsProperties = () => {
                         </TableHeader>
                         <TableBody>
                             {filteredListings.map((listing) => (
-                                <TableRow key={listing.id}>
+                                <TableRow key={listing._id}>
                                     <TableCell className="font-medium">
                                         {listing.name}
                                     </TableCell>
@@ -103,7 +108,7 @@ const ListingsProperties = () => {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Building2 className="h-4 w-4 text-muted-foreground" />
-                                            {listing.propertyType}
+                                            {listing.propertyType.title}
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -112,7 +117,7 @@ const ListingsProperties = () => {
                                         <br />
                                         <span className="text-sm text-muted-foreground">
                                             {listing.genderPreference} •{" "}
-                                            {listing.contractLength}
+                                            {listing.contractLength.title}
                                         </span>
                                     </TableCell>
                                     <TableCell>
@@ -123,71 +128,89 @@ const ListingsProperties = () => {
                                                         key={index}
                                                         className="flex items-center gap-1"
                                                     >
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Air Conditioning" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <AirVent className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity === "Wifi" && (
+                                                        {amenity.title ===
+                                                            "Wifi" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <Wifi className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Study Area" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <Home className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Kitchen" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <CookingPot className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Laundry" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <WashingMachine className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Parking" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <Car className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity ===
+                                                        {amenity.title ===
                                                             "Security" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <Shield className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        {amenity === "CCTV" && (
+                                                        {amenity.title ===
+                                                            "CCTV" && (
                                                             <div
-                                                                title={amenity}
+                                                                title={
+                                                                    amenity.title
+                                                                }
                                                                 className="p-1 rounded-sm cursor-pointer hover:bg-slate-100"
                                                             >
                                                                 <Cctv className="h-4 w-4" />
