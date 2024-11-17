@@ -1,4 +1,3 @@
-import { SAMPLE_RENTAL_DATA } from "./_lib/data";
 import Card from "./_components/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -11,8 +10,11 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { getAllListings } from "@/sanity/api/getAllListings";
 
-const Home = () => {
+const Home = async () => {
+    const listings = await getAllListings();
+
     return (
         <div className="container mx-auto grid lg:grid-cols-[240px_1fr] gap-8 py-8 px-4">
             <aside className="p-4 rounded-lg space-y-4">
@@ -227,9 +229,14 @@ const Home = () => {
             </aside>
 
             <main className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {SAMPLE_RENTAL_DATA.map((rental) => (
-                    <Card key={rental.id} {...rental} />
-                ))}
+                {listings.map((listing) => {
+                    return (
+                        <Card
+                            key={listing._id}
+                            listing={listing}
+                        />
+                    );
+                })}
             </main>
         </div>
     );
