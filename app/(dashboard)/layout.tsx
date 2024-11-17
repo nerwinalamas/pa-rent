@@ -1,3 +1,4 @@
+import ModalProvider from "@/providers/ModalProvider";
 import DashboardNavbar from "./_components/navbar";
 import DashboardSidebar from "./_components/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -13,6 +14,7 @@ export default function DashboardLayout({
             <main className="w-full">
                 <DashboardNavbar />
                 <section className="container mx-auto p-4">{children}</section>
+                <ModalProvider />
             </main>
         </SidebarProvider>
     );
