@@ -1,9 +1,12 @@
+import { getAllListings } from "@/sanity/api/getAllListings";
 import ListingsProperties from "./_components/listings-properties";
 
-const Listings = () => {
+const Listings = async () => {
+    const listings = await getAllListings();
+
     return (
         <div className="min-h-screen rounded-md md:p-4">
-            <ListingsProperties />
+            <ListingsProperties listings={listings} />
         </div>
     );
 };
