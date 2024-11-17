@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SAMPLE_RENTAL_DATA } from "@/app/(marketing)/_lib/data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,16 +19,22 @@ import {
     WashingMachine,
     Cctv,
 } from "lucide-react";
-import { formatPrice } from "@/app/(marketing)/_lib";
+import { format } from "date-fns";
+import { getListingById } from "@/sanity/api/getListingById";
 
-const CardDetails = async ({ params }: { params: { type: string; id: string } }) => {
+const CardDetails = async ({
+    params,
+}: {
+    params: { type: string; id: string };
+}) => {
     const { id } = await params;
-
-    const listing = SAMPLE_RENTAL_DATA.find((data) => data.id === id);
+    const listing = await getListingById(id);
 
     if (!listing) {
         return <div>Rental not found</div>;
     }
+
+    console.log("listing: ", listing)
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -50,16 +55,18 @@ const CardDetails = async ({ params }: { params: { type: string; id: string } })
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-4 mb-6">
-                        {listing.images.map((src, index) => (
-                            <Image
-                                key={index}
-                                src={src}
-                                alt={`Listing image ${index + 1}`}
-                                width={600}
-                                height={400}
-                                className="rounded-lg object-cover w-full h-48"
-                            />
-                        ))}
+                        {listing.images?.map((image, index) => {
+                            return (
+                                <Image
+                                    key={index}
+                                    src={image.url}
+                                    alt={`${listing.name} image`}
+                                    width={600}
+                                    height={400}
+                                    className="rounded-lg object-cover w-full h-48"
+                                />
+                            );
+                        })}
                     </div>
 
                     <div className="mb-6">
@@ -74,35 +81,41 @@ const CardDetails = async ({ params }: { params: { type: string; id: string } })
                             Amenities
                         </h2>
                         <div className="grid grid-cols-2 gap-4">
-                            {listing.amenities.map((amenity, index) => (
-                                <div key={index} className="flex items-center">
-                                    {amenity === "Air Conditioning" && (
-                                        <AirVent className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Wifi" && (
-                                        <Wifi className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Study Area" && (
-                                        <Home className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Kitchen" && (
-                                        <CookingPot className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Laundry" && (
-                                        <WashingMachine className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Parking" && (
-                                        <Car className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "Security" && (
-                                        <Shield className="mr-2 h-4 w-4" />
-                                    )}
-                                    {amenity === "CCTV" && (
-                                        <Cctv className="mr-2 h-4 w-4" />
-                                    )}
-                                    <span>{amenity}</span>
-                                </div>
-                            ))}
+                            {listing.amenities?.map((amenity) => {
+                                return (
+                                    <div
+                                        key={amenity.title}
+                                        className="flex items-center"
+                                    >
+                                        {amenity.title ===
+                                            "Air Conditioning" && (
+                                            <AirVent className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Wifi" && (
+                                            <Wifi className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Study Area" && (
+                                            <Home className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Kitchen" && (
+                                            <CookingPot className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Laundry" && (
+                                            <WashingMachine className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Parking" && (
+                                            <Car className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "Security" && (
+                                            <Shield className="mr-2 h-4 w-4" />
+                                        )}
+                                        {amenity.title === "CCTV" && (
+                                            <Cctv className="mr-2 h-4 w-4" />
+                                        )}
+                                        <span>{amenity.title}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -124,7 +137,8 @@ const CardDetails = async ({ params }: { params: { type: string; id: string } })
                             <div className="flex items-center">
                                 <Clock className="mr-2 h-4 w-4" />
                                 <span>
-                                    Contract Length: {listing.contractLength}
+                                    Contract Length:{" "}
+                                    {listing.contractLength?.title}
                                 </span>
                             </div>
                         </div>
@@ -135,31 +149,37 @@ const CardDetails = async ({ params }: { params: { type: string; id: string } })
                     <div className="bg-white p-6 rounded-lg shadow-md sticky top-6">
                         <div className="mb-4">
                             <span className="text-3xl font-bold">
-                                ₱{formatPrice(listing.price)}
+                                ₱{listing.price?.toLocaleString()}
                             </span>
                             <span className="text-gray-600"> / month</span>
                         </div>
-                        <Badge>{listing.propertyType}</Badge>
+                        <Badge>{listing.propertyType?.title}</Badge>
                         <Badge className="ml-2">
-                            {listing.genderPreference} Only
+                            {listing.genderPreference}{" "}
+                            {listing.genderPreference !== "Any Gender" &&
+                                "Only"}
                         </Badge>
                         <Separator className="my-4" />
                         <div className="flex items-center mb-4">
                             <Avatar className="h-10 w-10">
                                 <AvatarImage
-                                    src={listing.contactPerson.image}
-                                    alt={listing.contactPerson.name}
+                                    src={listing.creatorImage}
+                                    alt={listing.creatorName}
                                 />
                                 <AvatarFallback>
-                                    {listing.contactPerson.name[0]}
+                                    {listing.creatorName?.[0]}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="ml-4">
                                 <div className="font-semibold">
-                                    {listing.contactPerson.name}
+                                    {listing.creatorName}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                    Joined in {listing.contactPerson.joinedDate}
+                                    Joined in{" "}
+                                    {format(
+                                        listing.joinedDate as string,
+                                        "MMMM dd, yyyy"
+                                    )}
                                 </div>
                             </div>
                         </div>
