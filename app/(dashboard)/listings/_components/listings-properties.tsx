@@ -43,14 +43,18 @@ import {
 import { Property } from "@/sanity.types";
 import { useListingModal } from "@/hooks/useListingModal";
 
-const ListingsProperties = ({ listings }: { listings: Property }) => {
+interface ListingsPropertiesProps {
+    listings: Property[]
+}
+
+const ListingsProperties = ({ listings }: ListingsPropertiesProps) => {
     const [searchTerm, setSearchTerm] = useState("");
     const { onOpen } = useListingModal();
 
     const filteredListings = listings.filter(
         (listing) =>
-            listing.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            listing.location.toLowerCase().includes(searchTerm.toLowerCase())
+            listing.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            listing.location?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -103,12 +107,12 @@ const ListingsProperties = ({ listings }: { listings: Property }) => {
                                     </TableCell>
                                     <TableCell>{listing.location}</TableCell>
                                     <TableCell>
-                                        ₱{listing.price.toLocaleString()}
+                                        ₱{listing.price?.toLocaleString()}
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Building2 className="h-4 w-4 text-muted-foreground" />
-                                            {listing.propertyType.title}
+                                            {listing.propertyType?.title}
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -117,12 +121,13 @@ const ListingsProperties = ({ listings }: { listings: Property }) => {
                                         <br />
                                         <span className="text-sm text-muted-foreground">
                                             {listing.genderPreference} •{" "}
-                                            {listing.contractLength.title}
+                                            {listing.contractLength?.title}
                                         </span>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex gap-2">
-                                            {listing.amenities.map(
+                                        {/* MAY ERROR SA CREATE LISTING, AND ALSO CHECK /STUDIO */}
+                                        {/* <div className="flex gap-2">
+                                            {listing.amenities?.map(
                                                 (amenity, index) => (
                                                     <div
                                                         key={index}
@@ -219,7 +224,7 @@ const ListingsProperties = ({ listings }: { listings: Property }) => {
                                                     </div>
                                                 )
                                             )}
-                                        </div>
+                                        </div> */}
                                     </TableCell>
                                     <TableCell>
                                         <div
