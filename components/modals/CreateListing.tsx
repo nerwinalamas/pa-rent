@@ -33,45 +33,30 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Upload } from "lucide-react";
 import { useListingModal } from "@/hooks/useListingModal";
+import { formSchema } from "@/app/(dashboard)/listings/_lib/schema";
+import { createListing } from "@/sanity/api/createListing";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // You'll need to fetch these from Sanity
-const propertyTypes = ["Apartment", "House", "Condo", "Villa"];
-const amenities = ["WiFi", "Parking", "Gym", "Pool", "Pet Friendly"];
-const contractLengths = ["3 months", "6 months", "1 year", "2 years"];
-
-const formSchema = z.object({
-    name: z.string().min(2, {
-        message: "Property name must be at least 2 characters.",
-    }),
-    slug: z.string().min(2, {
-        message: "Slug must be at least 2 characters.",
-    }),
-    location: z.string().min(2, {
-        message: "Location must be at least 2 characters.",
-    }),
-    price: z.number().min(0, {
-        message: "Price must be a positive number.",
-    }),
-    images: z.array(z.any()).min(1, {
-        message: "At least one image is required.",
-    }),
-    propertyType: z.string(),
-    bedrooms: z.number().min(0),
-    bathrooms: z.number().min(0),
-    genderPreference: z.enum(["Any Gender", "Female", "Male"]),
-    amenities: z.array(z.string()).min(1, {
-        message: "Select at least one amenity.",
-    }),
-    contractLength: z.string(),
-    description: z.string().min(10, {
-        message: "Description must be at least 10 characters.",
-    }),
-    status: z.enum(["Available", "Occupied", "Under Maintenance"]),
-});
+const propertyTypes = ["All", "Apartment", "Bedspace", "House"];
+const amenities = [
+    "Study Area",
+    "CCTV",
+    "Security",
+    "Parking",
+    "Laundry",
+    "Kitchen",
+    "Wifi",
+    "Air Conditioning",
+];
+const contractLengths = ["1 month", "3 months", "6 months", "1 year"];
 
 const CreateListing = () => {
     const { isOpen, onClose, type } = useListingModal();
     const isModalOpen = isOpen && type === "createListing";
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { toast } = useToast();
 
     const handleDialogChange = () => {
         onClose();
@@ -81,7 +66,6 @@ const CreateListing = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            slug: "",
             location: "",
             price: 0,
             images: [],
@@ -97,9 +81,35 @@ const CreateListing = () => {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // Here you would typically send the data to Sanity
-        console.log(values);
-        handleDialogChange();
+        try {
+            setIsSubmitting(true);
+            toast({
+                title: "Creating listing...",
+                description: "Please wait while we create your listing.",
+            });
+
+            await createListing(values);
+
+            toast({
+                title: "Success!",
+                description: "Your listing has been created.",
+                variant: "default",
+            });
+
+            onClose();
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Error",
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to create listing",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -133,27 +143,6 @@ const CreateListing = () => {
                                 </FormItem>
                             )}
                         />
-                        {/* <FormField
-                            control={form.control}
-                            name="slug"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Slug</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Enter slug"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        This will be used in the URL. It&apos;s
-                                        automatically generated but you can
-                                        customize it.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /> */}
                         <FormField
                             control={form.control}
                             name="location"
@@ -347,117 +336,123 @@ const CreateListing = () => {
                                             this property.
                                         </FormDescription>
                                     </div>
-                                    {amenities.map((item) => (
-                                        <FormField
-                                            key={item}
-                                            control={form.control}
-                                            name="amenities"
-                                            render={({ field }) => {
-                                                return (
-                                                    <FormItem
-                                                        key={item}
-                                                        className="flex flex-row items-start space-x-3 space-y-0"
-                                                    >
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                checked={field.value?.includes(
-                                                                    item
-                                                                )}
-                                                                onCheckedChange={(
-                                                                    checked
-                                                                ) => {
-                                                                    return checked
-                                                                        ? field.onChange(
-                                                                              [
-                                                                                  ...field.value,
-                                                                                  item,
-                                                                              ]
-                                                                          )
-                                                                        : field.onChange(
-                                                                              field.value?.filter(
-                                                                                  (
-                                                                                      value
-                                                                                  ) =>
-                                                                                      value !==
-                                                                                      item
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {amenities.map((item) => (
+                                            <FormField
+                                                key={item}
+                                                control={form.control}
+                                                name="amenities"
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                            key={item}
+                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                        >
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(
+                                                                        item
+                                                                    )}
+                                                                    onCheckedChange={(
+                                                                        checked
+                                                                    ) => {
+                                                                        return checked
+                                                                            ? field.onChange(
+                                                                                  [
+                                                                                      ...field.value,
+                                                                                      item,
+                                                                                  ]
                                                                               )
-                                                                          );
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormLabel className="font-normal">
-                                                            {item}
-                                                        </FormLabel>
-                                                    </FormItem>
-                                                );
-                                            }}
-                                        />
-                                    ))}
+                                                                            : field.onChange(
+                                                                                  field.value?.filter(
+                                                                                      (
+                                                                                          value
+                                                                                      ) =>
+                                                                                          value !==
+                                                                                          item
+                                                                                  )
+                                                                              );
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">
+                                                                {item}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    );
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="contractLength"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Contract Length</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select contract length" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {contractLengths.map((length) => (
-                                                <SelectItem
-                                                    key={length}
-                                                    value={length}
-                                                >
-                                                    {length}
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="contractLength"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Contract Length</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select contract length" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {contractLengths.map(
+                                                    (length) => (
+                                                        <SelectItem
+                                                            key={length}
+                                                            value={length}
+                                                        >
+                                                            {length}
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="status"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Status</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select status" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="Available">
+                                                    Available
                                                 </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Status</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="Available">
-                                                Available
-                                            </SelectItem>
-                                            <SelectItem value="Occupied">
-                                                Occupied
-                                            </SelectItem>
-                                            <SelectItem value="Under Maintenance">
-                                                Under Maintenance
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                                <SelectItem value="Occupied">
+                                                    Occupied
+                                                </SelectItem>
+                                                <SelectItem value="Under Maintenance">
+                                                    Under Maintenance
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
                             name="description"
@@ -476,7 +471,11 @@ const CreateListing = () => {
                             )}
                         />
                         <DialogFooter>
-                            <Button type="submit">Create Listing</Button>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting
+                                    ? "Creating..."
+                                    : "Create Listing"}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
