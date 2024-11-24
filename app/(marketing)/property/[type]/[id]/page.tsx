@@ -25,7 +25,7 @@ import { getListingById } from "@/sanity/api/getListingById";
 const CardDetails = async ({
     params,
 }: {
-    params: { type: string; id: string };
+    params: Promise<{ type: string; id: string }>;
 }) => {
     const { id } = await params;
     const listing = await getListingById(id);
