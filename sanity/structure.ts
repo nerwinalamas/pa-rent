@@ -6,7 +6,7 @@ export const structure: StructureResolver = (S) =>
         .title("pa=rent")
         .items([
             S.documentTypeListItem("property").title("Properties"),
-            S.documentTypeListItem("category").title("Categories"),
+            S.documentTypeListItem("category").title("Property Type"),
             S.documentTypeListItem("amenity").title("Amenities"),
             S.documentTypeListItem("contractLength").title("Contract Length"),
             S.divider(),
